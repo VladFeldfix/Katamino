@@ -2,13 +2,13 @@ class Blocks:
     def __init__(self):
         # 01 Navy
         self.Navy = {}
-        #self.Navy['Name'] = "Navy"
+        self.Navy['Name'] = "Navy"
         self.Navy[0] = ((0,0),(0,1),(0,2),(0,3),(0,4))
         self.Navy[1] = ((0,0),(1,0),(2,0),(3,0),(4,0))
         
         # 02 Orange
         self.Orange = {}
-        #self.Orange['Name'] = "Orange"
+        self.Orange['Name'] = "Orange"
         self.Orange[0] = ((0,0),(0,1),(1,0),(2,0),(3,0))
         self.Orange[1] = ((0,0),(0,1),(0,2),(0,3),(1,3))
         self.Orange[2] = ((0,1),(1,1),(2,1),(3,0),(3,1))
@@ -20,7 +20,7 @@ class Blocks:
 
         # 03 Brown
         self.Brown = {}
-        #self.Brown['Name'] = "Brown"
+        self.Brown['Name'] = "Brown"
         self.Brown[0] = ((0,1),(1,0),(1,1),(1,2),(1,3))
         self.Brown[1] = ((0,0),(1,0),(1,1),(2,0),(3,0))
         self.Brown[2] = ((0,0),(0,1),(0,2),(0,3),(1,2))
@@ -32,7 +32,7 @@ class Blocks:
 
         # 04 Purple
         self.Purple = {}
-        #self.Purple['Name'] = "Purple"
+        self.Purple['Name'] = "Purple"
         self.Purple[0] = ((0,0),(0,1),(0,2),(1,2),(1,3))
         self.Purple[1] = ((0,1),(1,1),(2,0),(2,1),(3,0))
         self.Purple[2] = ((0,0),(0,1),(1,1),(1,2),(1,3))
@@ -44,7 +44,7 @@ class Blocks:
 
         # 05 Ocean
         self.Ocean = {}
-        #self.Ocean['Name'] = "Ocean"
+        self.Ocean['Name'] = "Ocean"
         self.Ocean[0] = ((0,0),(0,1),(0,2),(1,2),(2,2))
         self.Ocean[1] = ((0,2),(1,2),(2,0),(2,1),(2,2))
         self.Ocean[2] = ((0,0),(1,0),(2,0),(2,1),(2,2))
@@ -52,7 +52,7 @@ class Blocks:
 
         # 06 Pink
         self.Pink = {}
-        #self.Pink['Name'] = "Pink"
+        self.Pink['Name'] = "Pink"
         self.Pink[0] = ((0,1),(0,2),(1,0),(1,1),(1,2))
         self.Pink[1] = ((0,0),(0,1),(1,0),(1,1),(2,1))
         self.Pink[2] = ((0,0),(0,1),(0,2),(1,0),(1,1))
@@ -64,7 +64,7 @@ class Blocks:
 
         # 07 Yellow
         self.Yellow = {}
-        #self.Yellow['Name'] = "Yellow"
+        self.Yellow['Name'] = "Yellow"
         self.Yellow[0] = ((0,0),(0,1),(0,2),(1,0),(1,2))
         self.Yellow[1] = ((0,0),(0,1),(1,1),(2,0),(2,1))
         self.Yellow[2] = ((0,0),(0,2),(1,0),(1,1),(1,2))
@@ -72,7 +72,7 @@ class Blocks:
 
         # 08 Blue
         self.Blue = {}
-        #self.Blue['Name'] = "Blue"
+        self.Blue['Name'] = "Blue"
         self.Blue[0] = ((0,0),(0,1),(1,1),(2,1),(2,2))
         self.Blue[1] = ((0,2),(1,0),(1,1),(1,2),(2,0))
         self.Blue[2] = ((0,1),(0,2),(1,1),(2,0),(2,1))
@@ -80,7 +80,7 @@ class Blocks:
 
         # 09 Grey
         self.Grey = {}
-        #self.Grey['Name'] = "Grey"
+        self.Grey['Name'] = "Grey"
         self.Grey[0] = ((0,1),(1,0),(1,1),(2,1),(2,2))
         self.Grey[1] = ((0,1),(1,0),(1,1),(1,2),(2,0))
         self.Grey[2] = ((0,0),(0,1),(1,1),(1,2),(2,1))
@@ -92,7 +92,7 @@ class Blocks:
 
         # 10 Green
         self.Green = {}
-        #self.Green['Name'] = "Green"
+        self.Green['Name'] = "Green"
         self.Green[0] = ((0,0),(0,1),(0,2),(1,1),(2,1))
         self.Green[1] = ((0,2),(1,0),(1,1),(1,2),(2,2))
         self.Green[2] = ((0,1),(1,1),(2,0),(2,1),(2,2))
@@ -100,7 +100,7 @@ class Blocks:
 
         # 11 Olive
         self.Olive = {}
-        #self.Olive['Name'] = "Olive"
+        self.Olive['Name'] = "Olive"
         self.Olive[0] = ((0,2),(1,1),(1,2),(2,0),(2,1))
         self.Olive[1] = ((0,0),(1,0),(1,1),(2,1),(2,2))
         self.Olive[2] = ((0,1),(0,2),(1,0),(1,1),(2,0))
@@ -108,5 +108,5 @@ class Blocks:
 
         # 12 Red
         self.Red = {}
-        #self.Red['Name'] = "Red"
+        self.Red['Name'] = "Red"
         self.Red[0] = ((0,1),(1,0),(1,1),(1,2),(2,1))
