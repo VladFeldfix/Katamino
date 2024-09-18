@@ -19,7 +19,8 @@ class Obj_Ghost:
 class main:
     def __init__(self):
         self.blocks = Blocks() # load the shapes of all the blocks
-        self.objects = [] # a list of block objects
+        self.objects = {} # a dict of block objects with name for selecting
+        self.ghosts = {} # a list of ghosts objects for refernce (for collision code)
         self.board = [] # 2d list where each col is list of ghost names that are located there
         self.ghost_index = 0
 
@@ -28,6 +29,7 @@ class main:
         self.create_object(self.blocks.Orange)
         self.create_object(self.blocks.Brown)
         self.create_object(self.blocks.Green)
+        self.make_ghost_solid(self.objects["Orange"].ghosts[0])
         self.display_board()
         ##############
 
@@ -41,12 +43,24 @@ class main:
         # if there are no available shosts at go back to the prev self.objects index and goto START LOOP
         pass
     
+    def make_ghost_solid(self, obj_ghost):
+        if obj_ghost.state != Dead:
+            this_id = obj_ghost.name
+            obj_ghost.state = Solid
+            print(obj_ghost.cells)
+            for cell in obj_ghost.cells:
+                r = cell[0]
+                c = cell[1]
+                selected_board_cell = self.board[r][c] # print(selected_board_cell) > [1, 3, 4, 17, 20, 33, 36]
+                for ghost_id in selected_board_cell: # kill all ghosts coliding with the solid ghost
+                    if ghost_id != this_id: # dont kill yourself
+                        self.ghosts[ghost_id].state = Dead # kill ghost on collision
+    
     def create_object(self, obj_block):
         # run a for loop throgh the board
         r = 0
         c = 0
         block = Obj_Block()
-        self.objects.append(block)
         for row in self.board: # row = [[],[],[]]
             for col in row: # col = []
                 # now place ghosts of the object in all its angles
@@ -77,11 +91,13 @@ class main:
                             self.ghost_index += 1
                             ghost = Obj_Ghost(self.ghost_index, shape)
                             block.ghosts.append(ghost)
+                            self.ghosts[self.ghost_index] = ghost
                             for cell in shape:
                                 self.board[cell[0]][cell[1]].append(self.ghost_index)
                     else:
                         name = cells
                         block.color = name
+                        self.objects[name] = block
                 # add cell
                 c += 1
             # add row
@@ -101,7 +117,7 @@ class main:
             display += "|"
             for col in row:
                 for cell in col:
-                    display += "G"+str(cell)+" "
+                    display += "G"+str(cell)+" "+self.ghosts[cell].state+","
                 display += "|"
             display += "\n"
         print(display)
