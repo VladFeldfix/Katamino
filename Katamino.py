@@ -2,7 +2,7 @@ from Blocks import Blocks
 
 Ghost = "Ghost"
 Solid = "Solid"
-Dead = "Daed"
+Dead = "Dead"
 
 class Obj_Block:
     def __init__(self):
@@ -31,6 +31,8 @@ class main:
         self.create_object(self.blocks.Green)
         self.make_ghost_solid(self.objects["Orange"].ghosts[0])
         self.display_board()
+        self.reset_all_ghosts()
+        self.display_board()
         ##############
 
     def calculate(self):
@@ -47,7 +49,6 @@ class main:
         if obj_ghost.state != Dead:
             this_id = obj_ghost.name
             obj_ghost.state = Solid
-            print(obj_ghost.cells)
             for cell in obj_ghost.cells:
                 r = cell[0]
                 c = cell[1]
@@ -55,6 +56,10 @@ class main:
                 for ghost_id in selected_board_cell: # kill all ghosts coliding with the solid ghost
                     if ghost_id != this_id: # dont kill yourself
                         self.ghosts[ghost_id].state = Dead # kill ghost on collision
+    
+    def reset_all_ghosts(self):
+        for ghost in self.ghosts.values():
+            ghost.state = Ghost
     
     def create_object(self, obj_block):
         # run a for loop throgh the board
