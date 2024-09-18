@@ -31,9 +31,8 @@ class main:
         self.create_object(self.blocks.Brown)
         self.create_object(self.blocks.Green)
         self.make_ghost_solid(self.objects["Orange"].ghosts[0])
-        self.display_board()
         self.reset_all_ghosts()
-        self.display_board()
+        #self.display_board()
         self.calculate()
         ##############
 
@@ -48,30 +47,91 @@ class main:
         
         win = False
         pointer = 0
+        winpath = []
         while not win:
-            for block in self.objects.values():
-                print(block.color)
-            """
             # select a block acording to the pointer location
             block = self.objects[self.object_list[pointer]] # self.object_list = ['Orange', 'Brown', 'Green'], block > Obj_Block()
+    
+            ###########  display for testing  ###########
+            display = ""
+            i = 0
+            for name in self.object_list:
+                BLOCK = self.objects[name]
+                if pointer == i:
+                    this = ">"
+                else:
+                    this = ""
+                display += this+BLOCK.color+": [selected:"+str(BLOCK.selected_ghost)+"]"
+                for ghost in BLOCK.ghosts:
+                    display += " "+str(ghost.name)+"-"+ghost.state
+                display += "\n"
+                i += 1
+            print("START OF TURN:")
+            print(display)
+            print(winpath)
+            #############################################
 
-            # find the fist available ghost and make is solid
+            # find the fist available ghost and make it solid
             ghost = None
-            select = 0
+            deadend = False
             while ghost == None:
-                if select < len(block.ghosts):
+                if block.selected_ghost < len(block.ghosts):
                     if block.ghosts[block.selected_ghost].state == Ghost:
                         ghost = block.ghosts[block.selected_ghost] # ghost -> Obj_Ghost()
+                        self.make_ghost_solid(ghost)
+                        winpath.append((block.color, block.selected_ghost))
                     else:
                         block.selected_ghost += 1
                 else:
+                    deadend = True
                     break
             
-            # if no ghost can be solid 
-            self.make_ghost_solid(ghost)
-            """
-            win = True
-    
+            if not deadend:
+                if pointer < len(self.object_list)-1:
+                    pointer += 1
+                else:
+                    win = True
+                    print('WIN')
+                    self.display_board()
+            else:
+                print("DEADEND!!")
+                # if reached a dead end adjustment are needed
+                # step 1: make all ghosts Ghosts
+                self.reset_all_ghosts()
+
+                # step 2: delete the last step
+                winpath.pop()
+                self.objects[self.object_list[pointer]].selected_ghost = 0
+
+                # step 3: pointer go back in the last block and +1 in the previous
+                pointer -= 1
+                self.objects[self.object_list[pointer]].selected_ghost +=1
+
+                # step 4: refill the solids
+                for step in winpath:
+                    obj = self.objects[step[0]]
+                    self.make_ghost_solid(obj.ghosts[obj.selected_ghost])
+
+            ###########  display for testing  ###########
+            display = ""
+            i = 0
+            for name in self.object_list:
+                BLOCK = self.objects[name]
+                if pointer == i:
+                    this = ">"
+                else:
+                    this = ""
+                display += this+BLOCK.color+": [selected:"+str(BLOCK.selected_ghost)+"]"
+                for ghost in BLOCK.ghosts:
+                    display += " "+str(ghost.name)+"-"+ghost.state
+                display += "\n"
+                i += 1
+            print("END OF TURN:")
+            print(display)
+            print(winpath)
+            #############################################
+            input("------------------------------------------------------------------------------------------->")
+
     def make_ghost_solid(self, obj_ghost):
         if obj_ghost.state != Dead:
             this_id = obj_ghost.name
@@ -155,6 +215,5 @@ class main:
                 display += "|"
             display += "\n"
         print(display)
-        print(self.object_list)
 
 main()
