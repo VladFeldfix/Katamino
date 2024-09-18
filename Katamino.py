@@ -1,3 +1,13 @@
+import tkinter
+from tkinter import *
+from tkinter import font as tkfont
+from PIL import ImageTk, Image
+from tkinter import filedialog
+import os
+import random
+import sys
+import threading
+
 from Blocks import Blocks
 
 Ghost = "Ghost"
@@ -26,15 +36,102 @@ class main:
         self.ghost_index = 0
 
         #### TEST ####
-        self.setup_board(3)
+        """
+        # ultimate:
+        self.size = 12
+        self.setup_board(self.size)
+        self.create_object(self.blocks.Navy)
         self.create_object(self.blocks.Orange)
         self.create_object(self.blocks.Brown)
+        self.create_object(self.blocks.Purple)
+        self.create_object(self.blocks.Ocean)
+        self.create_object(self.blocks.Pink)
+        self.create_object(self.blocks.Yellow)
+        self.create_object(self.blocks.Blue)
+        self.create_object(self.blocks.Grey)
         self.create_object(self.blocks.Green)
+        self.create_object(self.blocks.Olive)
+        self.create_object(self.blocks.Red)
         self.make_ghost_solid(self.objects["Orange"].ghosts[0])
-        self.reset_all_ghosts()
-        #self.display_board()
         self.calculate()
+        """
+        # ultimate:
+        self.size = 8
+        self.setup_board(self.size)
+        #self.create_object(self.blocks.Navy)
+        self.create_object(self.blocks.Orange)
+        self.create_object(self.blocks.Brown)
+        self.create_object(self.blocks.Purple)
+        self.create_object(self.blocks.Ocean)
+        self.create_object(self.blocks.Pink)
+        #self.create_object(self.blocks.Yellow)
+        self.create_object(self.blocks.Blue)
+        #self.create_object(self.blocks.Grey)
+        self.create_object(self.blocks.Green)
+        self.create_object(self.blocks.Olive)
+        #self.create_object(self.blocks.Red)
+        #self.make_ghost_solid(self.objects["Orange"].ghosts[0])
+        #self.calculate()
         ##############
+       
+
+        # global variables
+        sprites = []
+        
+        # setup main window
+        root = tkinter.Tk()
+        W = 320*4
+        H = 240*3
+        root.geometry(str(W)+"x"+str(H))
+        root.minsize(W,H)
+        root.title("Katamino v1.0")
+        #root.iconbitmap("favicon.ico")
+        for x in range(12):
+            root.columnconfigure(x, weight=1)
+        root.rowconfigure(0, weight=1)
+        root.rowconfigure(1, weight=1)
+        root.resizable(False, False)
+
+        # setup self.canvas
+        self.canvas = Canvas(root, width=W, height=H, bg="white")
+        self.canvas.grid(row=0, column=0, columnspan=13, sticky="WN")
+
+        # load images
+        lastname = ""
+        x = 0
+        for path, directories, files in os.walk('Blocks'):
+            for file in files:
+                if ".png" in file:
+                    # add block
+                    filename = path+"/"+file.replace("\\","/")
+                    image = Image.open(filename)
+                    photoimage = ImageTk.PhotoImage(image)
+                    sprites.append(photoimage)
+                    self.canvas.create_image(W+10, H+10, image = photoimage, anchor=NW, tag=file.replace(".png", ""))
+
+                    # add blovk activation button
+                    number = file[0:2]
+                    if number != lastname:
+                        lastname = number
+                        name = file[3:].replace("_1.png","")
+                        #print(name)
+                        image = Image.open("Buttons/"+lastname+".png")
+                        image = image.resize((103,97), Image.LANCZOS)
+                        resizedimage = ImageTk.PhotoImage(image)
+                        sprites.append(resizedimage)
+                        btn = Button(root, image = resizedimage, height=200, padx=100, command=lambda: self.create_object(self.blocks.Purple))
+                        btn.config(bg = "black")
+                        btn.grid(column=x, row=1, sticky="NEWS")
+                        x += 1
+                    #self.canvas.coords("01_Navy_1", 200, 200)
+        self.start()
+        # run main loop
+        root.mainloop()
+
+    def start(self):
+        self.thread = threading.Thread(target=self.calculate)
+        self.thread.daemon = True
+        self.thread.start()
 
     def calculate(self):
         # the calculation method:
@@ -49,6 +146,7 @@ class main:
         pointer = 0
         winpath = []
         while not win:
+            #print(winpath)
             # select a block acording to the pointer location
             block = self.objects[self.object_list[pointer]] # self.object_list = ['Orange', 'Brown', 'Green'], block > Obj_Block()
     
@@ -66,9 +164,9 @@ class main:
                     display += " "+str(ghost.name)+"-"+ghost.state
                 display += "\n"
                 i += 1
-            print("START OF TURN:")
-            print(display)
-            print(winpath)
+            #print("START OF TURN:")
+            #print(display)
+            #print(winpath)
             #############################################
 
             # find the fist available ghost and make it solid
@@ -91,16 +189,20 @@ class main:
                     pointer += 1
                 else:
                     win = True
-                    print('WIN')
-                    self.display_board()
+                    #print('WIN')
+                    self.display_solution()
             else:
-                print("DEADEND!!")
+                #print("DEADEND!!")
                 # if reached a dead end adjustment are needed
                 # step 1: make all ghosts Ghosts
                 self.reset_all_ghosts()
 
                 # step 2: delete the last step
-                winpath.pop()
+                try:
+                    winpath.pop()
+                except:
+                    #print("IMPOSSIBLE")
+                    break
                 self.objects[self.object_list[pointer]].selected_ghost = 0
 
                 # step 3: pointer go back in the last block and +1 in the previous
@@ -126,20 +228,21 @@ class main:
                     display += " "+str(ghost.name)+"-"+ghost.state
                 display += "\n"
                 i += 1
-            print("END OF TURN:")
-            print(display)
-            print(winpath)
+            #print("END OF TURN:")
+            #print(display)
+            #print(winpath)
             #############################################
-            input("------------------------------------------------------------------------------------------->")
+            #print("------------------------------------------------------------------------------------------->")
 
     def make_ghost_solid(self, obj_ghost):
+        # self.canvas.coords("01_Navy_1", x, y) <- figure this out
         if obj_ghost.state != Dead:
             this_id = obj_ghost.name
             obj_ghost.state = Solid
             for cell in obj_ghost.cells:
                 r = cell[0]
                 c = cell[1]
-                selected_board_cell = self.board[r][c] # print(selected_board_cell) > [1, 3, 4, 17, 20, 33, 36]
+                selected_board_cell = self.board[r][c] # #print(selected_board_cell) > [1, 3, 4, 17, 20, 33, 36]
                 for ghost_id in selected_board_cell: # kill all ghosts coliding with the solid ghost
                     if ghost_id != this_id: # dont kill yourself
                         self.ghosts[ghost_id].state = Dead # kill ghost on collision
@@ -177,7 +280,7 @@ class main:
                         # after the set ((0,0),(0,1),(1,0),(2,0),(3,0)) is placed on the board, if it succeeded 
                         if not fail:
                             # the shape if a set of:
-                            # print("r=",r,"c=",c,"angle=",angle,"shape=",shape)
+                            # #print("r=",r,"c=",c,"angle=",angle,"shape=",shape)
                             # r= 0 c= 0 angle= 0 shape= [(0, 0), (0, 1), (1, 0), (2, 0), (3, 0)]
                             # create a ghost nd insert it into the block object
                             self.ghost_index += 1
@@ -213,6 +316,28 @@ class main:
                 for cell in col:
                     display += "G"+str(cell)+" "+self.ghosts[cell].state+","
                 display += "|"
+            display += "\n"
+        #print(display)
+    
+    def display_solution(self):
+        grahic_board = []
+        for row in range(5):
+            grahic_board.append([])
+            for _ in range(self.size):
+                grahic_board[row].append("")
+        
+        for obj in self.objects.values():
+            for ghost in obj.ghosts:
+                if ghost.state == Solid:
+                    for cell in ghost.cells:
+                        grahic_board[cell[0]][cell[1]] = obj.color
+        
+        display = ""
+        for row in grahic_board:
+            display += "|"
+            for col in row:
+                color = col+" "*(10-len(col))
+                display += color+"|"
             display += "\n"
         print(display)
 
