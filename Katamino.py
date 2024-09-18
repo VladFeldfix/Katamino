@@ -21,6 +21,7 @@ class main:
         self.blocks = Blocks() # load the shapes of all the blocks
         self.objects = {} # a dict of block objects with name for selecting
         self.ghosts = {} # a list of ghosts objects for refernce (for collision code)
+        self.object_list = [] # a list of objects id's to reference the self.objects dictionary
         self.board = [] # 2d list where each col is list of ghost names that are located there
         self.ghost_index = 0
 
@@ -33,6 +34,7 @@ class main:
         self.display_board()
         self.reset_all_ghosts()
         self.display_board()
+        self.calculate()
         ##############
 
     def calculate(self):
@@ -43,7 +45,32 @@ class main:
         # go to the next object in the list self.objects
         # select the first available ghost and set selected_ghost to the index of the ghost
         # if there are no available shosts at go back to the prev self.objects index and goto START LOOP
-        pass
+        
+        win = False
+        pointer = 0
+        while not win:
+            for block in self.objects.values():
+                print(block.color)
+            """
+            # select a block acording to the pointer location
+            block = self.objects[self.object_list[pointer]] # self.object_list = ['Orange', 'Brown', 'Green'], block > Obj_Block()
+
+            # find the fist available ghost and make is solid
+            ghost = None
+            select = 0
+            while ghost == None:
+                if select < len(block.ghosts):
+                    if block.ghosts[block.selected_ghost].state == Ghost:
+                        ghost = block.ghosts[block.selected_ghost] # ghost -> Obj_Ghost()
+                    else:
+                        block.selected_ghost += 1
+                else:
+                    break
+            
+            # if no ghost can be solid 
+            self.make_ghost_solid(ghost)
+            """
+            win = True
     
     def make_ghost_solid(self, obj_ghost):
         if obj_ghost.state != Dead:
@@ -102,7 +129,9 @@ class main:
                     else:
                         name = cells
                         block.color = name
-                        self.objects[name] = block
+                        if not name in self.objects:
+                            self.objects[name] = block
+                            self.object_list.append(name)
                 # add cell
                 c += 1
             # add row
@@ -126,5 +155,6 @@ class main:
                 display += "|"
             display += "\n"
         print(display)
+        print(self.object_list)
 
 main()
