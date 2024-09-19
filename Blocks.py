@@ -110,3 +110,18 @@ class Blocks:
         self.Red = {}
         self.Red['Name'] = "Red"
         self.Red[0] = ((0,1),(1,0),(1,1),(1,2),(2,1))
+
+        # all
+        self.activation_list = {}
+        self.activation_list["Navy"] = self.Navy
+        self.activation_list["Orange"] = self.Orange
+        self.activation_list["Brown"] = self.Brown
+        self.activation_list["Purple"] = self.Purple
+        self.activation_list["Ocean"] = self.Ocean
+        self.activation_list["Pink"] = self.Pink
+        self.activation_list["Yellow"] = self.Yellow
+        self.activation_list["Blue"] = self.Blue
+        self.activation_list["Grey"] = self.Grey
+        self.activation_list["Green"] = self.Green
+        self.activation_list["Olive"] = self.Olive
+        self.activation_list["Red"] = self.Red
