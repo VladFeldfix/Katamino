@@ -31,6 +31,12 @@ class main:
         self.board = [] # 2d list where each col is list of ghost names that are located there
         self.ghost_index = 0
 
+        # setup board initial
+        for row in range(5):
+            self.board.append([])
+            for _ in range(3):
+                self.board[row].append([])
+
         # activate gui
         self.activate_gui()
     
@@ -110,11 +116,13 @@ class main:
                         btn = Button(root, image = resizedimage, height=200)
                         btn.config(command=lambda fn=(filename, btn): self.press_button(fn))
                         btn.grid(column=x, row=1, sticky="NEWS")
+                        self.buttons.append(btn)
                         x += 1
 
         # setup start button
         start_button = Button(root, height=2, text="START", command=self.start)
         start_button.grid(row=3, column=0, columnspan=13, sticky="NEWS")
+        self.buttons.append(start_button)
 
         # run main loop
         root.mainloop()
@@ -141,6 +149,8 @@ class main:
             if len(self.activation_list) > 0:
                 # disable all buttons
                 self.playing = True
+                for button in self.buttons:
+                    button.config(state=DISABLED)
 
                 # set self.activation_list
                 for iten in self.activation_list:
@@ -276,7 +286,8 @@ class main:
             r += 1
 
     def check_hand_enter(self):
-        self.canvas.config(cursor="hand2")
+        if not self.playing:
+            self.canvas.config(cursor="hand2")
 
     def check_hand_leave(self):
         self.canvas.config(cursor="")
