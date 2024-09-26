@@ -108,7 +108,7 @@ class Blocks:
 
         # 12 Red
         self.Red = {}
-        self.Red['Name'] = "Red"
+        self.Red['Name'] = "12_Red"
         self.Red[0] = ((0,1),(1,0),(1,1),(1,2),(2,1))
 
         # all
