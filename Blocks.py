@@ -2,13 +2,13 @@ class Blocks:
     def __init__(self):
         # 01 Navy
         self.Navy = {}
-        self.Navy['Name'] = "Navy"
+        self.Navy['Name'] = "01_Navy"
         self.Navy[0] = ((0,0),(0,1),(0,2),(0,3),(0,4))
         self.Navy[1] = ((0,0),(1,0),(2,0),(3,0),(4,0))
         
         # 02 Orange
         self.Orange = {}
-        self.Orange['Name'] = "Orange"
+        self.Orange['Name'] = "02_Orange"
         self.Orange[0] = ((0,0),(0,1),(1,0),(2,0),(3,0))
         self.Orange[1] = ((0,0),(0,1),(0,2),(0,3),(1,3))
         self.Orange[2] = ((0,1),(1,1),(2,1),(3,0),(3,1))
@@ -20,7 +20,7 @@ class Blocks:
 
         # 03 Brown
         self.Brown = {}
-        self.Brown['Name'] = "Brown"
+        self.Brown['Name'] = "03_Brown"
         self.Brown[0] = ((0,1),(1,0),(1,1),(1,2),(1,3))
         self.Brown[1] = ((0,0),(1,0),(1,1),(2,0),(3,0))
         self.Brown[2] = ((0,0),(0,1),(0,2),(0,3),(1,2))
@@ -32,7 +32,7 @@ class Blocks:
 
         # 04 Purple
         self.Purple = {}
-        self.Purple['Name'] = "Purple"
+        self.Purple['Name'] = "04_Purple"
         self.Purple[0] = ((0,0),(0,1),(0,2),(1,2),(1,3))
         self.Purple[1] = ((0,1),(1,1),(2,0),(2,1),(3,0))
         self.Purple[2] = ((0,0),(0,1),(1,1),(1,2),(1,3))
@@ -44,7 +44,7 @@ class Blocks:
 
         # 05 Ocean
         self.Ocean = {}
-        self.Ocean['Name'] = "Ocean"
+        self.Ocean['Name'] = "05_Ocean"
         self.Ocean[0] = ((0,0),(0,1),(0,2),(1,2),(2,2))
         self.Ocean[1] = ((0,2),(1,2),(2,0),(2,1),(2,2))
         self.Ocean[2] = ((0,0),(1,0),(2,0),(2,1),(2,2))
@@ -52,7 +52,7 @@ class Blocks:
 
         # 06 Pink
         self.Pink = {}
-        self.Pink['Name'] = "Pink"
+        self.Pink['Name'] = "06_Pink"
         self.Pink[0] = ((0,1),(0,2),(1,0),(1,1),(1,2))
         self.Pink[1] = ((0,0),(0,1),(1,0),(1,1),(2,1))
         self.Pink[2] = ((0,0),(0,1),(0,2),(1,0),(1,1))
@@ -64,7 +64,7 @@ class Blocks:
 
         # 07 Yellow
         self.Yellow = {}
-        self.Yellow['Name'] = "Yellow"
+        self.Yellow['Name'] = "07_Yellow"
         self.Yellow[0] = ((0,0),(0,1),(0,2),(1,0),(1,2))
         self.Yellow[1] = ((0,0),(0,1),(1,1),(2,0),(2,1))
         self.Yellow[2] = ((0,0),(0,2),(1,0),(1,1),(1,2))
@@ -72,7 +72,7 @@ class Blocks:
 
         # 08 Blue
         self.Blue = {}
-        self.Blue['Name'] = "Blue"
+        self.Blue['Name'] = "08_Blue"
         self.Blue[0] = ((0,0),(0,1),(1,1),(2,1),(2,2))
         self.Blue[1] = ((0,2),(1,0),(1,1),(1,2),(2,0))
         self.Blue[2] = ((0,1),(0,2),(1,1),(2,0),(2,1))
@@ -80,7 +80,7 @@ class Blocks:
 
         # 09 Grey
         self.Grey = {}
-        self.Grey['Name'] = "Grey"
+        self.Grey['Name'] = "09_Grey"
         self.Grey[0] = ((0,1),(1,0),(1,1),(2,1),(2,2))
         self.Grey[1] = ((0,1),(1,0),(1,1),(1,2),(2,0))
         self.Grey[2] = ((0,0),(0,1),(1,1),(1,2),(2,1))
@@ -92,7 +92,7 @@ class Blocks:
 
         # 10 Green
         self.Green = {}
-        self.Green['Name'] = "Green"
+        self.Green['Name'] = "10_Green"
         self.Green[0] = ((0,0),(0,1),(0,2),(1,1),(2,1))
         self.Green[1] = ((0,2),(1,0),(1,1),(1,2),(2,2))
         self.Green[2] = ((0,1),(1,1),(2,0),(2,1),(2,2))
@@ -100,7 +100,7 @@ class Blocks:
 
         # 11 Olive
         self.Olive = {}
-        self.Olive['Name'] = "Olive"
+        self.Olive['Name'] = "11_Olive"
         self.Olive[0] = ((0,2),(1,1),(1,2),(2,0),(2,1))
         self.Olive[1] = ((0,0),(1,0),(1,1),(2,1),(2,2))
         self.Olive[2] = ((0,1),(0,2),(1,0),(1,1),(2,0))
@@ -113,15 +113,15 @@ class Blocks:
 
         # all
         self.activation_list = {}
-        self.activation_list["Navy"] = self.Navy
-        self.activation_list["Orange"] = self.Orange
-        self.activation_list["Brown"] = self.Brown
-        self.activation_list["Purple"] = self.Purple
-        self.activation_list["Ocean"] = self.Ocean
-        self.activation_list["Pink"] = self.Pink
-        self.activation_list["Yellow"] = self.Yellow
-        self.activation_list["Blue"] = self.Blue
-        self.activation_list["Grey"] = self.Grey
-        self.activation_list["Green"] = self.Green
-        self.activation_list["Olive"] = self.Olive
-        self.activation_list["Red"] = self.Red
+        self.activation_list["01_Navy"] = self.Navy
+        self.activation_list["02_Orange"] = self.Orange
+        self.activation_list["03_Brown"] = self.Brown
+        self.activation_list["04_Purple"] = self.Purple
+        self.activation_list["05_Ocean"] = self.Ocean
+        self.activation_list["06_Pink"] = self.Pink
+        self.activation_list["07_Yellow"] = self.Yellow
+        self.activation_list["08_Blue"] = self.Blue
+        self.activation_list["09_Grey"] = self.Grey
+        self.activation_list["10_Green"] = self.Green
+        self.activation_list["11_Olive"] = self.Olive
+        self.activation_list["12_Red"] = self.Red
