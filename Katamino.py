@@ -133,6 +133,16 @@ class main:
         # steps
         self.steps_text = self.canvas.create_text(self.boardx,self.boardy+64*7+32,text="Steps: "+str(self.steps),fill="black",font="Arial 20 bold",anchor="w")
 
+        # help
+        image = Image.open("Buttons/help.png")
+        photoimage = ImageTk.PhotoImage(image)
+        sprites.append(photoimage)
+        Tag = "help"
+        self.canvas.create_image(0,0, image = photoimage, anchor=NW, tag=Tag)
+        self.canvas.tag_bind(Tag, "<Enter>", lambda event: self.check_hand_enter())
+        self.canvas.tag_bind(Tag, "<Leave>", lambda event: self.check_hand_leave())
+        self.canvas.tag_bind(Tag, "<ButtonPress-1>", self.help)
+
         # run main loop
         root.mainloop()
     
@@ -372,6 +382,9 @@ class main:
             for row in range(5):
                 self.board.append([])
                 for _ in range(size):
-                    self.board[row].append([])
+                    self.board[row].append([])\
+    
+    def help(self, event):
+        os.popen("help.pdf")
 
 main()
