@@ -4,6 +4,7 @@ from tkinter import *
 import os
 from PIL import ImageTk, Image
 import threading
+from tkinter import messagebox
 
 Ghost = "Ghost"
 Solid = "Solid"
@@ -16,10 +17,13 @@ class Obj_Block:
         self.selected_ghost = 0 # the index of the solid ghost int
 
 class Obj_Ghost:
-    def __init__(self, ghost_name, shape):
+    def __init__(self, ghost_name, shape, tag, x, y):
         self.name = ghost_name # ghost1, ghost2, ghost3 string
         self.cells = shape # [(0,0),(1,0),(2,0),(3,0),(4,0)] a list of locations on the board
         self.state = Ghost # Ghost, Solid, Dead string
+        self.tag = tag
+        self.x = x
+        self.y = y
 
 class main:
     def __init__(self):
@@ -49,12 +53,12 @@ class main:
         
         # setup main window
         root = tkinter.Tk()
-        W = 320*4
-        H = 240*3
-        root.geometry(str(W)+"x"+str(H))
-        root.minsize(W,H)
+        self.W = 320*4
+        self.H = 240*3
+        root.geometry(str(self.W)+"x"+str(self.H))
+        root.minsize(self.W,self.H)
         root.title("Katamino v1.0")
-        #root.iconbitmap("favicon.ico")
+        root.iconbitmap("favicon.ico")
         for x in range(12):
             root.columnconfigure(x, weight=1)
         root.rowconfigure(0, weight=1)
@@ -63,7 +67,7 @@ class main:
         root.resizable(False, False)
 
         # setup canvas
-        self.canvas = Canvas(root, width=W, height=H-50, bg="white")
+        self.canvas = Canvas(root, width=self.W, height=self.H-50, bg="white")
         self.canvas.grid(row=0, column=0, columnspan=13, sticky="WN")
 
         # setup graphical board
@@ -102,13 +106,13 @@ class main:
                     image = Image.open(filename)
                     photoimage = ImageTk.PhotoImage(image)
                     sprites.append(photoimage)
-                    self.canvas.create_image(W+10, H+10, image = photoimage, anchor=NW, tag=file.replace(".png", ""))
+                    self.canvas.create_image(self.W+10, self.H+10, image = photoimage, anchor=NW, tag=file.replace(".png", ""))
 
                     # add block activation button
                     number = file[0:2]
                     if number != lastname:
                         lastname = number
-                        name = file[3:].replace("_1.png","")
+                        name = filename.replace("_1.png","")
                         image = Image.open("Buttons/"+lastname+".png")
                         image = image.resize((103,97), Image.LANCZOS)
                         resizedimage = ImageTk.PhotoImage(image)
@@ -132,7 +136,9 @@ class main:
             btn = data[0]
             tkinter_button_object = data[1]
             btn = btn.split("_")
-            btn = btn[1]
+            btn[0] = btn[0].replace("\\", "/")
+            tmp = btn[0].split("/")
+            btn = tmp[1]+"_"+btn[1]
             add = self.blocks.activation_list[btn]
             if not add in self.activation_list:
                 self.activation_list.append(add)
@@ -207,6 +213,7 @@ class main:
                     winpath.pop()
                 except:
                     # unsolvable
+                    messagebox.showerror("Error","This combination cannot be solved!")
                     break
                 self.objects[self.object_list[pointer]].selected_ghost = 0
 
@@ -218,11 +225,14 @@ class main:
                 for step in winpath:
                     obj = self.objects[step[0]]
                     self.make_ghost_solid(obj.ghosts[obj.selected_ghost])
-
+        if win:
+            messagebox.showinfo("Info","Complete!")
+    
     def make_ghost_solid(self, obj_ghost):
         if obj_ghost.state != Dead:
             this_id = obj_ghost.name
             obj_ghost.state = Solid
+            self.canvas.coords(obj_ghost.tag, obj_ghost.x, obj_ghost.y)
             for cell in obj_ghost.cells:
                 r = cell[0]
                 c = cell[1]
@@ -234,6 +244,7 @@ class main:
     def reset_all_ghosts(self):
         for ghost in self.ghosts.values():
             ghost.state = Ghost
+            self.canvas.coords(ghost.tag, self.W+10, self.H+10)
     
     def create_object(self, obj_block):
         # run a for loop throgh the board
@@ -268,7 +279,13 @@ class main:
                             # r= 0 c= 0 angle= 0 shape= [(0, 0), (0, 1), (1, 0), (2, 0), (3, 0)]
                             # create a ghost nd insert it into the block object
                             self.ghost_index += 1
-                            ghost = Obj_Ghost(self.ghost_index, shape)
+                            tag = name+"_"+str(angle+1)
+                            x = c*32+self.boardx+32
+                            y = r*32+self.boardy+32
+                            #print(tag)
+                            ghost = Obj_Ghost(self.ghost_index, shape, tag, x, y)
+                            #self.canvas.coords(tag, x, y)
+                            #input(self.board)
                             block.ghosts.append(ghost)
                             self.ghosts[self.ghost_index] = ghost
                             for cell in shape:
