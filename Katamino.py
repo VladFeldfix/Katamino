@@ -34,6 +34,8 @@ class main:
         self.object_list = [] # a list of objects id's to reference the self.objects dictionary
         self.board = [] # 2d list where each col is list of ghost names that are located there
         self.ghost_index = 0
+        self.animation = {}
+        self.steps = 0
 
         # setup board initial
         for row in range(5):
@@ -74,9 +76,15 @@ class main:
         image = Image.open("Board/board.png")
         photoimage = ImageTk.PhotoImage(image)
         sprites.append(photoimage)
-        self.boardx = 64
-        self.boardy = 64
-        self.canvas.create_image(self.boardx, self.boardy, image = photoimage, anchor=NW)
+        self.boardx = 158
+        self.boardy = 61
+        self.canvas.create_image(0, 0, image = photoimage, anchor=NW)
+
+        # setup graphical board devider
+        image = Image.open("Board/board_devider.png")
+        photoimage = ImageTk.PhotoImage(image)
+        sprites.append(photoimage)
+        self.canvas.create_image(self.boardx+64*4, self.boardy, image = photoimage, anchor=NW, tag="Devider")
 
         # setup graphical board buttons
         for i in range(3,13):
@@ -84,16 +92,10 @@ class main:
             photoimage = ImageTk.PhotoImage(image)
             sprites.append(photoimage)
             Tag = "board_btn"+str(i)
-            self.canvas.create_image(self.boardx+32+(32*i), self.boardy, image = photoimage, anchor=NW, tag=Tag)
+            self.canvas.create_image(self.boardx+64+(64*i), self.boardy, image = photoimage, anchor=NW, tag=Tag)
             self.canvas.tag_bind(Tag, "<Enter>", lambda event: self.check_hand_enter())
             self.canvas.tag_bind(Tag, "<Leave>", lambda event: self.check_hand_leave())
             self.canvas.tag_bind(Tag, "<ButtonPress-1>", lambda event: self.setup_board(self))
-        
-        # setup graphical board devider
-        image = Image.open("Board/board_devider.png")
-        photoimage = ImageTk.PhotoImage(image)
-        sprites.append(photoimage)
-        self.canvas.create_image(self.boardx+128, self.boardy, image = photoimage, anchor=NW, tag="Devider")
         
         # setup blocks
         lastname = ""
@@ -127,6 +129,9 @@ class main:
         start_button = Button(root, height=2, text="START", command=self.start)
         start_button.grid(row=3, column=0, columnspan=13, sticky="NEWS")
         self.buttons.append(start_button)
+
+        # steps
+        self.steps_text = self.canvas.create_text(self.boardx,self.boardy+64*7+32,text="Steps: "+str(self.steps),fill="black",font="Arial 20 bold",anchor="w")
 
         # run main loop
         root.mainloop()
@@ -166,7 +171,7 @@ class main:
                 self.thread = threading.Thread(target=self.calculate)
                 self.thread.daemon = True
                 self.thread.start()
-
+    
     def calculate(self):
         # the calculation method:
         # START LOOP
@@ -180,6 +185,10 @@ class main:
         pointer = 0
         winpath = []
         while not win:
+            self.steps += 1
+            n = str(self.steps)
+            self.canvas.itemconfigure(self.steps_text, text="Steps: "+f"{self.steps:,}")
+            goto_next = False
             # select a block acording to the pointer location
             block = self.objects[self.object_list[pointer]] # self.object_list = ['Orange', 'Brown', 'Green'], block > Obj_Block()
 
@@ -204,6 +213,22 @@ class main:
                 else:
                     win = True
             else:
+                goto_next = True
+            
+            # test board for dead spots
+            for row in self.board:
+                for col in row:
+                    deadcell = True
+                    for ghost_id in col:
+                        ghost = self.ghosts[ghost_id]
+                        if ghost.state != Dead:
+                            deadcell = False
+                    if deadcell:
+                        goto_next = True
+                        break
+            
+            # next
+            if goto_next:
                 # if reached a dead end adjustment are needed
                 # step 1: make all ghosts Ghosts
                 self.reset_all_ghosts()
@@ -225,14 +250,37 @@ class main:
                 for step in winpath:
                     obj = self.objects[step[0]]
                     self.make_ghost_solid(obj.ghosts[obj.selected_ghost])
+
+            # update animation
+            self.update_animation()
+        
+        # update animation lasat time before winning
+        self.update_animation()
+
+        # end
         if win:
-            messagebox.showinfo("Info","Complete!")
-    
+            # test board for dead spots
+            empty_spaces = False
+            for row in self.board:
+                for col in row:
+                    if len(col) > 0:
+                        for ghost_id in col:
+                            ghost = self.ghosts[ghost_id]
+                            if ghost.state == Ghost:
+                                empty_spaces = True
+                    else:
+                        empty_spaces = True
+            if not empty_spaces:
+                messagebox.showinfo("Info","Complete!")
+            else:
+                messagebox.showerror("Error","This combination cannot be solved!")
+
     def make_ghost_solid(self, obj_ghost):
         if obj_ghost.state != Dead:
             this_id = obj_ghost.name
             obj_ghost.state = Solid
-            self.canvas.coords(obj_ghost.tag, obj_ghost.x, obj_ghost.y)
+            self.animation[obj_ghost.tag] = (obj_ghost.x, obj_ghost.y)
+            #self.canvas.coords(obj_ghost.tag, obj_ghost.x, obj_ghost.y)
             for cell in obj_ghost.cells:
                 r = cell[0]
                 c = cell[1]
@@ -244,8 +292,13 @@ class main:
     def reset_all_ghosts(self):
         for ghost in self.ghosts.values():
             ghost.state = Ghost
-            self.canvas.coords(ghost.tag, self.W+10, self.H+10)
+            self.animation[ghost.tag] = (self.W+10, self.H+10)
+            #self.canvas.coords(ghost.tag, self.W+10, self.H+10)
     
+    def update_animation(self):
+        for block, coordinates in self.animation.items():
+            self.canvas.coords(block, coordinates[0], coordinates[1])
+
     def create_object(self, obj_block):
         # run a for loop throgh the board
         r = 0
@@ -280,8 +333,8 @@ class main:
                             # create a ghost nd insert it into the block object
                             self.ghost_index += 1
                             tag = name+"_"+str(angle+1)
-                            x = c*32+self.boardx+32
-                            y = r*32+self.boardy+32
+                            x = c*64+self.boardx+64
+                            y = r*64+self.boardy+64
                             #print(tag)
                             ghost = Obj_Ghost(self.ghost_index, shape, tag, x, y)
                             #self.canvas.coords(tag, x, y)
@@ -314,7 +367,7 @@ class main:
             size = self.canvas.gettags("current")[0]
             size = size.replace("board_btn","")
             size = int(size)
-            self.canvas.coords("Devider", self.boardx+32+(32*size), self.boardy)
+            self.canvas.coords("Devider", self.boardx+64+(64*size), self.boardy)
             self.board = []
             for row in range(5):
                 self.board.append([])
