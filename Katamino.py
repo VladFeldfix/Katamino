@@ -5,6 +5,7 @@ import os
 from PIL import ImageTk, Image
 import threading
 from tkinter import messagebox
+from datetime import datetime
 
 Ghost = "Ghost"
 Solid = "Solid"
@@ -131,7 +132,10 @@ class main:
         self.buttons.append(start_button)
 
         # steps
-        self.steps_text = self.canvas.create_text(self.boardx,self.boardy+64*7+32,text="Steps: "+str(self.steps),fill="black",font="Arial 20 bold",anchor="w")
+        self.start_time = ""
+        self.end_time = ""
+        self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+        self.steps_text = self.canvas.create_text(self.boardx,self.boardy+64*7+32,text=self.steps_and_timestamp,fill="black",font="Arial 20 bold",anchor="w")
 
         # help
         image = Image.open("Buttons/help.png")
@@ -183,6 +187,9 @@ class main:
                 self.thread.start()
     
     def calculate(self):
+        self.start_time = timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+        self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp)
         # the calculation method:
         # START LOOP
         # go to next object in self.objects (start from 0)
@@ -196,8 +203,8 @@ class main:
         winpath = []
         while not win:
             self.steps += 1
-            n = str(self.steps)
-            self.canvas.itemconfigure(self.steps_text, text="Steps: "+f"{self.steps:,}")
+            self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+            self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp)
             goto_next = False
             # select a block acording to the pointer location
             block = self.objects[self.object_list[pointer]] # self.object_list = ['Orange', 'Brown', 'Green'], block > Obj_Block()
@@ -248,6 +255,9 @@ class main:
                     winpath.pop()
                 except:
                     # unsolvable
+                    self.end_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+                    self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp)
                     messagebox.showerror("Error","This combination cannot be solved!")
                     break
                 self.objects[self.object_list[pointer]].selected_ghost = 0
@@ -263,8 +273,10 @@ class main:
 
             # update animation
             self.update_animation()
-        
+
         # update animation lasat time before winning
+        self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+        self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp) 
         self.update_animation()
 
         # end
@@ -281,16 +293,24 @@ class main:
                     else:
                         empty_spaces = True
             if not empty_spaces:
+                self.end_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+                self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp)
                 messagebox.showinfo("Info","Complete!")
+                
             else:
+                self.end_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+                self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp)
                 messagebox.showerror("Error","This combination cannot be solved!")
 
     def make_ghost_solid(self, obj_ghost):
         if obj_ghost.state != Dead:
             this_id = obj_ghost.name
             obj_ghost.state = Solid
-            self.animation[obj_ghost.tag] = (obj_ghost.x, obj_ghost.y)
-            #self.canvas.coords(obj_ghost.tag, obj_ghost.x, obj_ghost.y)
+            self.animation[obj_ghost.tag] = (obj_ghost.x, obj_ghost.y) #self.canvas.coords(obj_ghost.tag, obj_ghost.x, obj_ghost.y)
+            
+            # kill every ghost that is touching my ghost
             for cell in obj_ghost.cells:
                 r = cell[0]
                 c = cell[1]
@@ -298,6 +318,16 @@ class main:
                 for ghost_id in selected_board_cell: # kill all ghosts coliding with the solid ghost
                     if ghost_id != this_id: # dont kill yourself
                         self.ghosts[ghost_id].state = Dead # kill ghost on collision
+            
+            # kill all the ghosts of the same objcet
+            tag = obj_ghost.tag # 04_Purple_2
+            tag = tag.split("_")
+            tag = tag[0]+"_"+tag[1]
+            block = self.objects[tag] # this will be block = Obj_block
+            for gh in block.ghosts:
+                if gh.name != obj_ghost.name:
+                    gh.state = Dead
+
     
     def reset_all_ghosts(self):
         for ghost in self.ghosts.values():
