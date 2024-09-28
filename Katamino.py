@@ -7,6 +7,7 @@ import threading
 from tkinter import messagebox
 from datetime import datetime
 from collections import deque # for BFS in flood fill algorithm
+import time
 
 
 Ghost = "Ghost"
@@ -203,10 +204,11 @@ class main:
         win = False
         pointer = 0
         winpath = []
+        
+        last_update = time.time()
+        
         while not win:
             self.steps += 1
-            self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
-            self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp)
             goto_next = False
             # select a block acording to the pointer location
             block = self.objects[self.object_list[pointer]] # self.object_list = ['Orange', 'Brown', 'Green'], block > Obj_Block()
@@ -323,7 +325,12 @@ class main:
                     self.make_ghost_solid(obj.ghosts[obj.selected_ghost])
 
             # update animation
-            self.update_animation()
+            if time.time() >= last_update + 0.1: # only update the screen every 0.1 seconds
+                last_update = time.time()
+
+                self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
+                self.canvas.itemconfigure(self.steps_text, text=self.steps_and_timestamp)
+                self.update_animation()
 
         # update animation lasat time before winning
         self.steps_and_timestamp = "Steps: "+f"{self.steps:,}"+"  Start time: "+self.start_time+"  End time: "+self.end_time
