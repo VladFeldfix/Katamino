@@ -6,6 +6,8 @@ from PIL import ImageTk, Image
 import threading
 from tkinter import messagebox
 from datetime import datetime
+from collections import deque # for BFS in flood fill algorithm
+
 
 Ghost = "Ghost"
 Solid = "Solid"
@@ -232,17 +234,66 @@ class main:
             else:
                 goto_next = True
             
-            # test board for dead spots
-            for row in self.board:
-                for col in row:
-                    deadcell = True
-                    for ghost_id in col:
-                        ghost = self.ghosts[ghost_id]
-                        if ghost.state != Dead:
-                            deadcell = False
-                    if deadcell:
+            # we shouldn't do these checks if we already know we're gonna go to next
+            if (not goto_next):
+                # test board for dead spots
+                for row in self.board:
+                    for col in row:
+                        deadcell = True
+                        for ghost_id in col:
+                            ghost = self.ghosts[ghost_id]
+                            if ghost.state != Dead:
+                                deadcell = False
+                                break # no need to keep checking because we found it isn't dead
+                        if deadcell:
+                            goto_next = True
+                            break
+                
+                
+                # test for a non multiple of 5 hole, which is impossible to fill
+                
+                # here we create an array of booleans, one for each position on the board.
+                # they start at False because we have yet to visit any of them, when we do they'll change to True
+                visited = [[False]* len(self.board[0]) for i in range(5) ] # create a 5 by whatever width they picked array
+                added_cells = block.ghosts[block.selected_ghost].cells # these are the cells that were added by solidifying this ghost
+                
+                for y,x in added_cells:
+                    visited[y][x] = True # makes it a bit faster, by exiting from the while quickly
+                
+                for modified_cell in added_cells:
+                    count = 0
+                    BFS_queue = deque([modified_cell]) # this is the first cell to look at
+                    while BFS_queue: # while there are more items in the queue
+                        y, x = BFS_queue.popleft()
+                        
+                        # add neighbors to queue
+                        for pos in ( (y-1,x),(y+1,x), (y,x-1),(y,x+1) ): # the four directions
+                            if pos[0]<0 or pos[0] >= 5 or pos[1]<0 or pos[1] >= len(self.board[0]) : # out of range
+                                continue
+                            
+                            if visited[pos[0]][pos[1]]:
+                                continue # we've already reached this position
+                            
+                            # make sure the cell is empty
+                            is_empty = True
+                            for ghost_id in self.board[pos[0]][pos[1]]:
+                                ghost = self.ghosts[ghost_id]
+                                if ghost.state == Solid:
+                                    is_empty = False
+                                    break
+                            if not is_empty:
+                                continue
+                            
+                            # we found a new empty neighbor so we add it to the queue and add to the count
+                            BFS_queue.append(pos)
+                            count += 1
+                            visited[pos[0]][pos[1]] = True
+                    
+                    if count % 5 != 0: # if a hole has a non multiple of 5 number of cells, then it can't be filled
                         goto_next = True
                         break
+                
+                
             
             # next
             if goto_next:
